@@ -16,7 +16,7 @@ func main(){
 	spec := "0 0 0,9,15,20 * * ?"
 	c := cron.New()
 	c.AddFunc(spec, func() {
-		sendMsg("o3UX4s-Yk2vJNG98OmCDOsp_sjhU","bzLFye1Rt5zo2dmEWP4g7ZA_l-QGtzuR5ax4B506-cg","广东省")
+		sendMsg("o3UX4s-Yk2vJNG9zxOmCDOsp_sjhU","bzLFye1Rt5zo2dmEWzuR5ax4B506-cg","广东省")
 	})
 	c.Start()
 	select{}
@@ -32,7 +32,7 @@ func sendMsg(openID string,templateID string,provinceName string){
 		msg=getSendMsg(pmsg)
 	}
 	fmt.Println(msg)
-	api := getAPI("wx89b4b6ed5cab8789", "4ad85249baca1d4dead589ead128f7c4")
+	api := getAPI("wx89b4bd5cab8789", "4ad85249b589ead128f7c4")
 	u:="https://api.weixin.qq.com/cgi-bin/message/template/send?access_token="+api.AccessToken
 	ms:=&MS{
 		Value:msg,
