@@ -7,6 +7,7 @@
   
 # [命令行版本](https://github.com/6yi/WechatCronAuto2019-nCov/releases)
   按步骤填好appid等直接跑就行,已放出windows可执行exe文件,linux版本自行编译
+  
   <img src='http://59.110.173.180/usr/uploads/2020/01/152454484.png'/> 
  
   ```cmd
