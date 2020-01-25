@@ -2,9 +2,12 @@ package main
 
 import (
 	"bytes"
+	"github.com/robfig/cron"
+
+	//"github.com/robfig/cron"
+
 	//"encoding/json"
 	"fmt"
-	"github.com/robfig/cron"
 	jsoniter "github.com/json-iterator/go"
 	"io/ioutil"
 	"net/http"
@@ -12,21 +15,82 @@ import (
 	"strconv"
 )
 
-func main(){
-
-	fmt.Println("2019新型肺炎疫情微信公众号定时推送")
-
-	spec := "0 0 0,9,15,20 * * ?"
-	c := cron.New()
-	c.AddFunc(spec, func() {
-		sendMsg("o3UX4s-Yk2vJNG9zxOmCDOsp_sjhU","bzLFye1Rt5zo2dmEWzuR5ax4B506-cg","广东省")
-	})
-	c.Start()
-	select{}
+type users struct {
+	appid string
+	secret string
+	templateID string
+	openid []string
+	provinceName []string
 }
 
 
-func sendMsg(openID string,templateID string,provinceName string){
+
+func main(){
+
+	gui()
+
+}
+
+
+
+func gui(){
+	var appid string
+	var secret string
+	var number int
+	fmt.Println("\n2019新型肺炎疫情微信公众号定时推送\n")
+Here:
+	fmt.Println("请设定appID和secret:\n")
+	fmt.Printf("appID:")
+	fmt.Scanln(&appid)
+	fmt.Printf("secret:")
+	fmt.Scanln(&secret)
+	//	token:=getAPI("wx89b4b6ed5cab8789","4ad85249baca1d4dead589ead128f7c4")
+	token:=getAPI(appid,secret)
+	if token.AccessToken=="" {
+		fmt.Printf("appid或者secret设置错误")
+		goto Here
+	}
+	var templateID string
+	fmt.Println("请设定推送模板templateID:")
+	fmt.Scanln(&templateID)
+	us:=new(users)
+	us.templateID=templateID
+	us.secret=secret
+	us.appid=appid
+	fmt.Println("设定推送人数: ")
+	fmt.Scanln(&number)
+	var openid string
+	var provinceName string
+	us.openid=make([]string,number)
+	us.provinceName=make([]string,number)
+	for key := 0; key < number; key++ {
+		fmt.Println("第",key+1,"位用户的openID:")
+		fmt.Scanln(&openid)
+		us.openid[key]=openid
+		fmt.Println("第",key+1,"位用户需要推送的省份,请写全称如(广东省):")
+		fmt.Scanln(&provinceName)
+		us.provinceName[key]=provinceName
+	}
+	def_spec := "0 0 0,9,15,20 * * ?"
+	var spec string
+	fmt.Printf("定点推送时间:(请按照linuxCron语法   按回车默认 0 0 0,9,15,20 * * ? 每日0时 9时 15时 20时推送 )\n")
+	fmt.Scanln(&spec)
+	if spec=="" {
+		spec=def_spec
+	}
+	fmt.Println("推送开始")
+	c := cron.New()
+	c.AddFunc(spec, func() {
+		for key := 0; key < number; key++ {
+			sendMsg(us.appid,us.secret,us.openid[key],us.templateID,us.provinceName[key])
+		}
+	})
+	c.Start()
+	select{}
+
+}
+
+func sendMsg(appid string,secret string,openID string,templateID string,provinceName string){
 	pmsg:=getMsg(provinceName)
 	var msg string
 	if pmsg.state==0{
@@ -35,7 +99,7 @@ func sendMsg(openID string,templateID string,provinceName string){
 		msg=getSendMsg(pmsg)
 	}
 	fmt.Println(msg)
-	api := getAPI("wx89b4bd5cab8789", "4ad85249b589ead128f7c4")
+	api := getAPI(appid, secret)
 	u:="https://api.weixin.qq.com/cgi-bin/message/template/send?access_token="+api.AccessToken
 	ms:=&MS{
 		Value:msg,
