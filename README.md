@@ -24,12 +24,15 @@
 
   首先注册公众测试号 ：https://mp.weixin.qq.com/debug/cgi-bin/sandbox?t=sandbox/login
   记录APPID以及appsecret
+  
   <img src='http://59.110.173.180/usr/uploads/2020/01/924286650.jpg'/> 
  
   扫码关注获取openID
+  
   <img src='http://59.110.173.180/usr/uploads/2020/01/2046595370.jpg'/> 
   
   创建模板
+  
   <img src='http://59.110.173.180/usr/uploads/2020/01/2790200253.jpg'/> 
   
   建议下载gui版本或者json版本,把相对应的数据填上去就OK了
