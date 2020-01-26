@@ -4,11 +4,7 @@
 
   具体使用步骤见[python微信天气定时提醒](https://github.com/6yi/WechatAutoWeather/blob/master/README.md),把里面的openID和模板ID填了就完事
   
-  
-# [命令行版本](https://github.com/6yi/WechatCronAuto2019-nCov/releases)
-  按步骤填好appid等直接跑就行,已放出windows可执行exe文件,linux版本自行编译
-  
-  <img src='http://59.110.173.180/usr/uploads/2020/01/152454484.png'/> 
+
  
   ```cmd
   # 交叉编译
@@ -35,7 +31,32 @@
   创建模板
   
   <img src='http://59.110.173.180/usr/uploads/2020/01/2790200253.jpg'/> 
+     
+# [命令行版本](https://github.com/6yi/WechatCronAuto2019-nCov/releases)
+  按步骤填好appid等直接跑就行,已放出windows可执行exe文件,linux版本自行编译
   
-  建议下载命令行版本或者json版本,把相对应的数据填上去就OK了
+  <img src='http://59.110.173.180/usr/uploads/2020/01/152454484.png'/> 
   
-  数据来源:丁香医生
+# [json配置版本](https://github.com/6yi/WechatCronAuto2019-nCov/releases)
+  在json版本可执行出现目录下创建 2019nCov.json文件,填写格式如下
+  ```json
+  {
+  "spec": "*/10 */1 * * ?",
+  "appID": "wxb4b6edasd9",
+  "secret":"4ad85249baa128f7c4",
+  "templateID": "bzLFye1RtsdEWP4g7ZA_l-QGtzuR5ax4B506-cg",
+  "user": [
+    {
+      "openID": "o3UX4s-YkamCDOsp_sjhU",
+      "provinceName": "广东省"
+    },
+    {
+      "openID": "o3UX4s-Yk2asmCDOsp_sjhU",
+      "provinceName": "湖北省"
+    }
+  ]
+}
+  ```
+  
+  
+  # 数据来源:丁香医生
