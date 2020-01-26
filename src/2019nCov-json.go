@@ -7,80 +7,32 @@ import (
 	"github.com/robfig/cron"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
 )
-
-type users struct {
-	appid string
-	secret string
-	templateID string
-	openid []string
-	provinceName []string
-}
-
-
 func main(){
-	gui()
-}
-
-func gui(){
-	var appid string
-	var secret string
-	var number int
-	fmt.Println("\n2019新型肺炎疫情微信公众号定时推送\n")
-Here:
-	fmt.Println("请设定appID和secret:\n")
-	fmt.Printf("appID:")
-	fmt.Scanln(&appid)
-	fmt.Printf("secret:")
-	fmt.Scanln(&secret)
-	token:=getAPI(appid,secret)
-	if token.AccessToken=="" {
-		fmt.Printf("appid或者secret设置错误")
-		goto Here
+	buf,err:=ioutil.ReadFile("2019nCov.json")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "配置文件不存在!")
+		return
 	}
-	var templateID string
-	fmt.Println("请设定推送模板templateID:")
-	fmt.Scanln(&templateID)
-	us:=new(users)
-	us.templateID=templateID
-	us.secret=secret
-	us.appid=appid
-	fmt.Println("设定推送人数: ")
-	fmt.Scanln(&number)
-	var openid string
-	var provinceName string
-	us.openid=make([]string,number)
-	us.provinceName=make([]string,number)
-	for key := 0; key < number; key++ {
-		fmt.Println("第",key+1,"位用户的openID:")
-		fmt.Scanln(&openid)
-		us.openid[key]=openid
-		fmt.Println("第",key+1,"位用户需要推送的省份,请写全称如(广东省):")
-		fmt.Scanln(&provinceName)
-		us.provinceName[key]=provinceName
-	}
-	//def_spec := "0 0 0,9,15,20 * * ?"
-	def_spec := "0 0,9,15,20 * * ?"
-	var spec string
-	fmt.Printf("定点推送时间:(请按照linuxCron语法   按回车默认  0 0,9,15,20 * * ? 每日0时 9时 15时 20时推送 )\n")
-	fmt.Scanln(&spec)
-	if spec=="" {
-		spec=def_spec
-	}
-	fmt.Println("推送开始")
-	c := cron.New()
-	c.AddFunc(spec, func() {
-		for key := 0; key < number; key++ {
-			sendMsg(us.appid,us.secret,us.openid[key],us.templateID,us.provinceName[key])
+	json := jsoniter.ConfigCompatibleWithStandardLibrary
+	data:=new(ini)
+	json.Unmarshal(buf,data)
+	c:=cron.New()
+	c.AddFunc(data.Spec, func() {
+		for _,user:=range data.User{
+			sendMsg(data.AppID,data.Secret,user.OpenID,data.TemplateID,user.ProvinceName)
 		}
 	})
 	c.Start()
-	select{}
+	select {
 
+	}
 }
+
 
 func sendMsg(appid string,secret string,openID string,templateID string,provinceName string){
 	pmsg:=getMsg(provinceName)
@@ -218,8 +170,19 @@ type Msg struct {
 	} `json:"cities"`
 }
 
+type ini struct {
+	Spec string `json:"spec"`
+	AppID string `json:"appID"`
+	Secret string `json:"secret"`
+	TemplateID string `json:"templateID"`
+	User []struct {
+		OpenID string `json:"openID"`
+		ProvinceName string `json:"provinceName"`
+	} `json:"user"`
+}
 
 type token struct {
 	AccessToken string `json:"access_token"`
 	ExpiresIn int `json:"expires_in"`
 }
+

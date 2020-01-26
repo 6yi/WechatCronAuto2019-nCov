@@ -1,0 +1,12 @@
+{
+  "spec": "0 0 0,9,15,20 * ?",
+  "appID": "wx89b4b6ed5cab8789",
+  "secret":"4ad85249baca1d4dead589ead128f7c4",
+  "templateID": "bzLFye1Rt5zo2dmEWP4g7ZA_l-QGtzuR5ax4B506-cg",
+   "user": [
+     {
+       "openID": "o3UX4s-Yk2vJNG98OmCDOsp_sjhU",
+       "provinceName": "广东省"
+     }
+   ]
+}
