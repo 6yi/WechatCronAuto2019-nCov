@@ -2,17 +2,14 @@ package main
 
 import (
 	"bytes"
-	"github.com/robfig/cron"
-
-	//"github.com/robfig/cron"
-
-	//"encoding/json"
 	"fmt"
 	jsoniter "github.com/json-iterator/go"
+	"github.com/robfig/cron"
 	"io/ioutil"
 	"net/http"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 type users struct {
@@ -24,14 +21,9 @@ type users struct {
 }
 
 
-
 func main(){
-
 	gui()
-
 }
-
-
 
 func gui(){
 	var appid string
@@ -44,7 +36,6 @@ Here:
 	fmt.Scanln(&appid)
 	fmt.Printf("secret:")
 	fmt.Scanln(&secret)
-	//	token:=getAPI("wx89b4b6ed5cab8789","4ad85249baca1d4dead589ead128f7c4")
 	token:=getAPI(appid,secret)
 	if token.AccessToken=="" {
 		fmt.Printf("appid或者secret设置错误")
@@ -71,9 +62,10 @@ Here:
 		fmt.Scanln(&provinceName)
 		us.provinceName[key]=provinceName
 	}
-	def_spec := "0 0 0,9,15,20 * * ?"
+	//def_spec := "0 0 0,9,15,20 * * ?"
+	def_spec := "0 0,9,15,20 * * ?"
 	var spec string
-	fmt.Printf("定点推送时间:(请按照linuxCron语法   按回车默认 0 0 0,9,15,20 * * ? 每日0时 9时 15时 20时推送 )\n")
+	fmt.Printf("定点推送时间:(请按照linuxCron语法   按回车默认  0 0,9,15,20 * * ? 每日0时 9时 15时 20时推送 )\n")
 	fmt.Scanln(&spec)
 	if spec=="" {
 		spec=def_spec
@@ -184,9 +176,19 @@ func getMsg(provinceName string) *reMsg{
 		return &reMsg{state:0}
 	}
 	strs:=(regexp.MustCompile("\\{\"provinceName\":\""+provinceName+"\".*?\\}\\]\\}").FindAll(body,-1))[0]
+	strs2:=(regexp.MustCompile("<span style=\"color: #4169e2\">.*?</span>").FindAll(body,-1))
+	all:=make([]string,4)
+	for key,y:=range strs2{
+		x:=strings.Split(string(y),"<span style=\"color: #4169e2\">")[1]
+		z:=strings.Split(x,"</span>")[0]
+		all[key]=z
+	}
 	json := jsoniter.ConfigCompatibleWithStandardLibrary
 	data:=new(Msg)
 	json.Unmarshal(strs,data)
+	data.AllConfirmedCount=all[0]
+	data.AllDeadCount=all[2]
+	data.AllCuredCount=all[3]
 	return &reMsg{state:1,Msg:*data}
 }
 
@@ -197,6 +199,9 @@ type reMsg struct {
 }
 
 type Msg struct {
+	AllConfirmedCount string
+	AllDeadCount string
+	AllCuredCount string
 	ProvinceName string `json:"provinceName"`
 	ProvinceShortName string `json:"provinceShortName"`
 	ConfirmedCount int `json:"confirmedCount"`
