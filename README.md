@@ -38,7 +38,7 @@
   <img src='http://59.110.173.180/usr/uploads/2020/01/152454484.png'/> 
   
 # [json配置版本](https://github.com/6yi/WechatCronAuto2019-nCov/releases)
-  在json版本可执行出现目录下创建 2019nCov.json文件,填写格式如下
+  在json版本可执行程序目录下创建 2019nCov.json文件,填写格式如下
   ```json
   {
   "spec": "*/10 */1 * * ?",
