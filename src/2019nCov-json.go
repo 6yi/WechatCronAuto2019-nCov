@@ -22,6 +22,7 @@ func main(){
 	data:=new(ini)
 	json.Unmarshal(buf,data)
 	c:=cron.New()
+	fmt.Println("开始推送")
 	c.AddFunc(data.Spec, func() {
 		for _,user:=range data.User{
 			sendMsg(data.AppID,data.Secret,user.OpenID,data.TemplateID,user.ProvinceName)

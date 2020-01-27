@@ -1,12 +1,14 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/robfig/cron"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -62,11 +64,12 @@ Here:
 		fmt.Scanln(&provinceName)
 		us.provinceName[key]=provinceName
 	}
-	//def_spec := "0 0 0,9,15,20 * * ?"
-	def_spec := "0 0,9,15,20 * * ?"
+	def_spec := "0 0 0,9,15,20 * ?"
 	var spec string
-	fmt.Printf("定点推送时间:(请按照linuxCron语法   按回车默认  0 0,9,15,20 * * ? 每日0时 9时 15时 20时推送 )\n")
-	fmt.Scanln(&spec)
+
+	fmt.Printf("定点推送时间:(请按照linuxCron语法   按回车默认  0 0 0,9,15,20 * ? 每日0时 9时 15时 20时推送)\n")
+
+	Scanf(&spec)
 	if spec=="" {
 		spec=def_spec
 	}
@@ -80,6 +83,12 @@ Here:
 	c.Start()
 	select{}
 
+}
+
+func Scanf(a *string) {
+	reader := bufio.NewReader(os.Stdin)
+	data, _, _ := reader.ReadLine()
+	*a = string(data)
 }
 
 func sendMsg(appid string,secret string,openID string,templateID string,provinceName string){
