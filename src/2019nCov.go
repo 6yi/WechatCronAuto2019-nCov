@@ -188,7 +188,6 @@ func getSendMsg(msg *reMsg) string {
 	str="全国"+"\t确诊:"+msg.AllConfirmedCount+"\t死亡:"+msg.AllDeadCount+"\t疑似:"+msg.AllSuspectedCount+"\t治愈:"+msg.AllCuredCount+"\n"+msg.ProvinceName+
 		"\t确诊:"+strconv.Itoa(msg.ConfirmedCount)+
 		"\t死亡:"+strconv.Itoa(msg.DeadCount)+
-		"\t疑似:"+strconv.Itoa(msg.SuspectedCount)+
 		"\t治愈:"+strconv.Itoa(msg.CuredCount)+
 		"\n\n"
 
@@ -196,7 +195,6 @@ func getSendMsg(msg *reMsg) string {
 		str=str+city.CityName+"\t确诊:"+
 			strconv.Itoa(city.ConfirmedCount)+
 			"\t死亡:"+strconv.Itoa(city.DeadCount)+
-			"\t疑似:"+strconv.Itoa(city.SuspectedCount)+
 			"\t治愈:"+strconv.Itoa(city.CuredCount)+"\n"
 	}
 	return str
