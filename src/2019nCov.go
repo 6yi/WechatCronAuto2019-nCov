@@ -156,6 +156,16 @@ func getAPI(appid string, secret string) *token {
 	json.Unmarshal(body,token)
 	return token
 }
+
+type AllMsg struct {
+	CountRemark string `json:"countRemark"`
+	ConfirmedCount int `json:"confirmedCount"`
+	SuspectedCount int `json:"suspectedCount"`
+	CuredCount int `json:"curedCount"`
+	DeadCount int `json:"deadCount"`
+	Virus string `json:"virus"`
+}
+
 func getMsg(provinceName string) *reMsg{
 	resp,erro:=http.Get("https://3g.dxy.cn/newh5/view/pneumonia?scene=2&clicktime=1579579384&enterid=1579579384&from=groupmessage&isappinstalled=0")
 	if erro!=nil{
@@ -166,26 +176,24 @@ func getMsg(provinceName string) *reMsg{
 		return &reMsg{state:0}
 	}
 	strs:=(regexp.MustCompile("\\{\"provinceName\":\""+provinceName+"\".*?\\}\\]\\}").FindAll(body,-1))[0]
-	strs2:=(regexp.MustCompile("<span style=\"color: rgb\\(65, 105, 226\\);\">.*?</span>").FindAll(body,-1))
-	all:=make([]string,4)
-	for key,y:=range strs2{
-		x:=strings.Split(string(y),"<span style=\"color: rgb(65, 105, 226);\">")[1]
-		z:=strings.Split(x,"</span>")[0]
-		all[key]=z
-	}
+	strs2:=(regexp.MustCompile(`"countRemark":".*?","confirmedCount":.*?,"suspectedCount":.*?,"curedCount":.*?,"deadCount":.*?,"virus":".*?"`).
+		FindAll(body,-1))[0]
+	x:="{"+string(strs2)+"}"
 	json := jsoniter.ConfigCompatibleWithStandardLibrary
+	alldata:=new(AllMsg)
+	json.Unmarshal([]byte(x),alldata)
 	data:=new(Msg)
 	json.Unmarshal(strs,data)
-	data.AllConfirmedCount=all[0]
-	data.AllSuspectedCount=all[1]
-	data.AllDeadCount=all[2]
-	data.AllCuredCount=all[3]
+	data.AllConfirmedCount=strconv.Itoa(alldata.ConfirmedCount)
+	data.AllSuspectedCount=strconv.Itoa(alldata.SuspectedCount)
+	data.AllCuredCount=strconv.Itoa(alldata.CuredCount)
+	data.AllDeadCount=strconv.Itoa(alldata.DeadCount)
 	return &reMsg{state:1,Msg:*data}
 }
 
 func getSendMsg(msg *reMsg) string {
 	var str string
-	str="全国"+"\t确诊:"+msg.AllConfirmedCount+"\t死亡:"+msg.AllDeadCount+"\t疑似:"+msg.AllSuspectedCount+"\t治愈:"+msg.AllCuredCount+"\n"+msg.ProvinceName+
+	str="全国"+"\t确诊:"+msg.AllConfirmedCount+"\t疑似:"+msg.AllSuspectedCount+"\t死亡:"+msg.AllDeadCount+"\t治愈:"+msg.AllCuredCount+"\n"+msg.ProvinceName+
 		"\t确诊:"+strconv.Itoa(msg.ConfirmedCount)+
 		"\t死亡:"+strconv.Itoa(msg.DeadCount)+
 		"\t治愈:"+strconv.Itoa(msg.CuredCount)+
